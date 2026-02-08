@@ -14,7 +14,6 @@ export type ConnectionRegistration = {
 export type PublishMessage = {
   topic: string
   id: string
-  payload: string
 }
 
 export type PublishResult = {
@@ -132,7 +131,7 @@ export class RedisRuntimeAdapter {
       return
     }
 
-    const topics = normalizeTopics(existing.topics.split(','))
+    const topics = existing.topics ? normalizeTopics(existing.topics.split(',')) : []
 
     await this.redis.srem(this.nodeConnectionsKey(existing.nodeId), connectionId)
 

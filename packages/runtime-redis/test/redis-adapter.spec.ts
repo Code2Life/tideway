@@ -59,7 +59,6 @@ describe('RedisRuntimeAdapter', () => {
     const publish: PublishMessage = {
       topic: 'alerts',
       id: 'event-1',
-      payload: 'hello',
     }
 
     await expect(adapter.publishToTopic(publish)).resolves.toEqual({
@@ -73,7 +72,6 @@ describe('RedisRuntimeAdapter', () => {
       adapter.publishToTopic({
         topic: 'missing',
         id: 'event-2',
-        payload: 'none',
       }),
     ).resolves.toEqual({
       dropped: true,

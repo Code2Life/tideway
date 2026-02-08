@@ -56,10 +56,6 @@ export class GatewayRoom {
       return this.handleTailEvents(decodeURIComponent(tailRouteMatch[1]), url)
     }
 
-    if (request.method === 'GET' && url.pathname === '/internal/debug/state') {
-      return Response.json(this.debugSnapshot())
-    }
-
     return Response.json({ error: 'not_found' }, { status: 404 })
   }
 
@@ -116,7 +112,6 @@ export class GatewayRoom {
       headers: {
         'content-type': 'text/event-stream; charset=utf-8',
         'cache-control': 'no-cache, no-transform',
-        connection: 'keep-alive',
       },
     })
   }
@@ -198,7 +193,8 @@ export class GatewayRoom {
       try {
         connection.controller.enqueue(eventBytes)
         delivered += 1
-      } catch {
+      } catch (error) {
+        console.error(`[publish:enqueue-failed] connectionId=${connectionId}`, error)
         this.unregisterConnection(connectionId)
       }
     }
@@ -341,6 +337,7 @@ export class GatewayRoom {
       subscribers.delete(connectionId)
       if (subscribers.size === 0) {
         this.topics.delete(topic)
+        this.topicEvents.delete(topic)
       }
     }
   }

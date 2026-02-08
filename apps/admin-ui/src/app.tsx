@@ -37,15 +37,21 @@ export function App({ gatewayBaseUrl = '' }: AppProps) {
       return
     }
 
+    const controller = new AbortController()
+
     if (activeTab === 'topics') {
       client
         .listTopics()
         .then((response) => {
-          setTopics(response.data)
-          setErrorMessage('')
+          if (!controller.signal.aborted) {
+            setTopics(response.data)
+            setErrorMessage('')
+          }
         })
         .catch((error: Error) => {
-          setErrorMessage(error.message)
+          if (!controller.signal.aborted) {
+            setErrorMessage(error.message)
+          }
         })
     }
 
@@ -53,13 +59,19 @@ export function App({ gatewayBaseUrl = '' }: AppProps) {
       client
         .listConnections()
         .then((response) => {
-          setConnections(response.data)
-          setErrorMessage('')
+          if (!controller.signal.aborted) {
+            setConnections(response.data)
+            setErrorMessage('')
+          }
         })
         .catch((error: Error) => {
-          setErrorMessage(error.message)
+          if (!controller.signal.aborted) {
+            setErrorMessage(error.message)
+          }
         })
     }
+
+    return () => controller.abort()
   }, [activeTab, client])
 
   const handleLogin = (event: FormEvent<HTMLFormElement>) => {
@@ -127,8 +139,12 @@ export function App({ gatewayBaseUrl = '' }: AppProps) {
             onClick={() => {
               localStorage.removeItem(API_KEY_STORAGE_KEY)
               setApiKey('')
+              setActiveTab('topics')
+              setTopics([])
+              setConnections([])
               setTailTopic('')
               setTailEvents([])
+              setErrorMessage('')
             }}
           >
             Logout
