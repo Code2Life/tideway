@@ -1,10 +1,13 @@
 import { Hono } from 'hono'
 
+import { adminRoutes } from './admin'
 import { requirePublisherApiKey } from './lib/auth'
 import { resolveRuntimeAdapter } from './runtime'
 import type { GatewayBindings } from './types'
 
 export const app = new Hono<{ Bindings: GatewayBindings }>()
+
+app.route('/admin', adminRoutes)
 
 app.get('/healthz', (context) => {
   return context.json({ status: 'ok' })

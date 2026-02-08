@@ -1,3 +1,4 @@
+import json
 import os
 import urllib.request
 
@@ -16,7 +17,7 @@ request = urllib.request.Request(
 
 with urllib.request.urlopen(request, timeout=15) as response:
     event_id = None
-    event_data = []
+    event_data: list[str] = []
 
     while True:
         raw_line = response.readline()
@@ -26,8 +27,10 @@ with urllib.request.urlopen(request, timeout=15) as response:
         line = raw_line.decode("utf-8").strip()
         if not line:
             if event_id and event_data:
-                print({"id": event_id, "data": "\n".join(event_data)})
+                print(json.dumps({"id": event_id, "data": "\n".join(event_data)}))
                 break
+            event_id = None
+            event_data.clear()
             continue
 
         if line.startswith("id: "):

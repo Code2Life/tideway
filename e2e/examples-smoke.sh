@@ -119,7 +119,7 @@ echo "gateway ready at ${GATEWAY_URL}" | tee -a "${SUMMARY_LOG}"
 
 run_case "typescript" "pnpm exec tsx examples/typescript/subscriber.ts" "pnpm exec tsx examples/typescript/publisher.ts" 60
 run_case "python" "python3 examples/python/subscriber.py" "python3 examples/python/publisher.py" 60
-run_case "go" "go run examples/go/subscriber.go" "go run examples/go/publisher.go" 60
+run_case "go" "go run ./examples/go/subscriber" "go run ./examples/go/publisher" 60
 run_case "rust" "cargo run --quiet --manifest-path examples/rust/Cargo.toml --bin subscriber" "cargo run --quiet --manifest-path examples/rust/Cargo.toml --bin publisher" 180
 
 echo "completed: $(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "${SUMMARY_LOG}"

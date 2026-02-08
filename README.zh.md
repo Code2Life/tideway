@@ -53,7 +53,7 @@ curl -X POST http://localhost:8787/v1/publish \
 | **多主题** | 订阅头 `x-sse-topic: a,b,c`；POST 可发往任意主题 |
 | **快速丢弃** | 无订阅者时直接丢弃发布，不读 body |
 | **分布式** | Redis 适配器 + Docker/Helm，可部署 3+ 节点（非 CF） |
-| **管理后台** | 主题、连接、实时事件追踪（React + Tailwind） |
+| **管理后台** | 主题、连接、实时事件追踪 — 内置于 `/admin` |
 
 ---
 
@@ -102,7 +102,7 @@ curl -X POST http://localhost:8787/v1/publish \
 |------|--------|--------|
 | TypeScript | [publisher.ts](examples/typescript/publisher.ts) | [subscriber.ts](examples/typescript/subscriber.ts) |
 | Python | [publisher.py](examples/python/publisher.py) | [subscriber.py](examples/python/subscriber.py) |
-| Go | [publisher.go](examples/go/publisher.go) | [subscriber.go](examples/go/subscriber.go) |
+| Go | [main.go](examples/go/publisher/main.go) | [main.go](examples/go/subscriber/main.go) |
 | Rust | [publisher.rs](examples/rust/src/bin/publisher.rs) | [subscriber.rs](examples/rust/src/bin/subscriber.rs) |
 
 ---
@@ -122,8 +122,9 @@ curl -X POST http://localhost:8787/v1/publish \
 ## 管理后台
 
 ```bash
-pnpm --filter @tideway/admin-ui dev
-# → http://localhost:5173 — 使用 API Key 登录
+# 访问运行中网关的 /admin
+open http://localhost:8787/admin
+# → 使用 API Key 登录
 ```
 
 标签页：**主题** · **连接** · **事件追踪**
@@ -140,7 +141,7 @@ pnpm e2e:examples    # TS/Python/Go/Rust 冒烟
 pnpm bench:publish   # 扇出基准
 ```
 
-**目录：** `workers/gateway/`（Worker）· `packages/runtime-redis/`（Redis 适配器）· `apps/admin-ui/` · `examples/` · `deploy/` · `docs/`
+**目录：** `workers/gateway/`（Worker + 内置管理后台）· `packages/runtime-redis/`（Redis 适配器）· `examples/` · `deploy/` · `docs/`
 
 ---
 

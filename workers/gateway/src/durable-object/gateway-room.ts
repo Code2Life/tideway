@@ -97,13 +97,19 @@ export class GatewayRoom {
       ? providedConnectionId
       : crypto.randomUUID()
 
+    let ownController: ReadableStreamDefaultController<Uint8Array>
+
     const stream = new ReadableStream<Uint8Array>({
       start: (controller) => {
+        ownController = controller
         this.registerConnection(connectionId, topics, controller)
         controller.enqueue(this.encoder.encode(`: connected ${connectionId}\n\n`))
       },
       cancel: () => {
-        this.unregisterConnection(connectionId)
+        const current = this.connections.get(connectionId)
+        if (current?.controller === ownController) {
+          this.unregisterConnection(connectionId)
+        }
       },
     })
 

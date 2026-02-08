@@ -46,13 +46,9 @@ curl -X POST \
   http://127.0.0.1:8787/v1/publish
 ```
 
-## 5) Run the admin UI
+## 5) Open the admin UI
 
-```bash
-pnpm --filter @tideway/admin-ui dev
-```
-
-Open http://127.0.0.1:5173 and log in with `dev-key`.
+Navigate to http://127.0.0.1:8787/admin and log in with `dev-key`.
 
 ## 6) Run all tests
 

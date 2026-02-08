@@ -147,6 +147,17 @@ export class RedisRuntimeAdapter {
     await this.redis.del(this.connectionKey(connectionId))
   }
 
+  async unregisterNode(nodeId: string): Promise<void> {
+    const connectionIds = await this.redis.smembers(this.nodeConnectionsKey(nodeId))
+
+    for (const connectionId of connectionIds) {
+      await this.unregisterConnection(connectionId)
+    }
+
+    await this.redis.del(this.nodeKey(nodeId))
+    await this.redis.srem(this.nodesKey(), nodeId)
+  }
+
   async getTopicDistribution(topic: string): Promise<string[]> {
     const topicNodes = await this.redis.smembers(this.topicNodesKey(topic))
     return topicNodes.sort()

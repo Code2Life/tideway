@@ -53,7 +53,7 @@ Terminal A prints: `id: evt-1` and `data: {"msg": "hello world"}`.
 | **Multi-topic** | Subscribe with `x-sse-topic: a,b,c`; publish to any topic via POST |
 | **Drop-early** | No active subscribers → drop publish without reading body |
 | **Distributed** | Redis adapter + Docker/Helm for 3+ nodes off Cloudflare |
-| **Admin UI** | Topics, connections, and live event tail (React + Tailwind) |
+| **Admin UI** | Topics, connections, and live event tail — built-in at `/admin` |
 
 ---
 
@@ -61,15 +61,15 @@ Terminal A prints: `id: evt-1` and `data: {"msg": "hello world"}`.
 
 ```
                   ┌──────────────────────────────────────┐
-                  │         Cloudflare Workers            │
+                  │         Cloudflare Workers           │
                   │                                      │
   Publisher ──POST──▶  Hono Router ──▶ Durable Object    │
-                  │       │              (GatewayRoom)    │
-  Subscriber ──SSE──▶    │           ┌──────────────┐    │
-                  │       │           │ Connection   │    │
-  Admin UI ──GET──▶       │           │ Map + Event │    │
-                  │       │           │ Buffer       │    │
-                  │       │           └──────────────┘    │
+                  │       │              (GatewayRoom)   │
+  Subscriber ──SSE──▶     │           ┌──────────────┐   │
+                  │       │           │ Connection   │   │
+  Admin UI ──GET──▶       │           │ Map + Event  │   │
+                  │       │           │ Buffer       │   │
+                  │       │           └──────────────┘   │
                   └──────────────────────────────────────┘
                            ▼ (non-CF)
                   ┌──────────────────┐
@@ -103,7 +103,7 @@ Publisher + subscriber in four languages (E2E-validated):
 |----------|-----------|------------|
 | TypeScript | [publisher.ts](examples/typescript/publisher.ts) | [subscriber.ts](examples/typescript/subscriber.ts) |
 | Python | [publisher.py](examples/python/publisher.py) | [subscriber.py](examples/python/subscriber.py) |
-| Go | [publisher.go](examples/go/publisher.go) | [subscriber.go](examples/go/subscriber.go) |
+| Go | [main.go](examples/go/publisher/main.go) | [main.go](examples/go/subscriber/main.go) |
 | Rust | [publisher.rs](examples/rust/src/bin/publisher.rs) | [subscriber.rs](examples/rust/src/bin/subscriber.rs) |
 
 ---
@@ -123,8 +123,9 @@ More: [docs/advanced-reference.md](docs/advanced-reference.md)
 ## Admin UI
 
 ```bash
-pnpm --filter @tideway/admin-ui dev
-# → http://localhost:5173 — log in with your API key
+# visit /admin on your running gateway
+open http://localhost:8787/admin
+# → log in with your API key
 ```
 
 Tabs: **Topics** · **Connections** · **Tail events**
@@ -141,7 +142,7 @@ pnpm e2e:examples    # TS/Python/Go/Rust smoke
 pnpm bench:publish   # fan-out benchmark
 ```
 
-**Layout:** `workers/gateway/` (Worker) · `packages/runtime-redis/` (Redis adapter) · `apps/admin-ui/` · `examples/` · `deploy/` · `docs/`
+**Layout:** `workers/gateway/` (Worker + inline Admin UI) · `packages/runtime-redis/` (Redis adapter) · `examples/` · `deploy/` · `docs/`
 
 ---
 
