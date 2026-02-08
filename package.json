@@ -1,0 +1,21 @@
+{
+  "name": "tideway",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "workspaces": [
+    "workers/*",
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "e2e:examples": "./e2e/examples-smoke.sh",
+    "bench:publish": "pnpm exec tsx benchmarks/publish-fanout.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

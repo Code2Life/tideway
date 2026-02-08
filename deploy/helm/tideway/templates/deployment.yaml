@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tideway.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "tideway.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.gateway.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "tideway.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "tideway.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: gateway
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
+          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+          command:
+            - pnpm
+            - dev
+            - --ip
+            - 0.0.0.0
+            - --port
+            - "{{ .Values.gateway.service.port }}"
+          ports:
+            - containerPort: {{ .Values.gateway.service.port }}
+          env:
+            - name: SSE_PUBLISHER_API_KEYS
+              value: {{ .Values.gateway.apiKeys | quote }}
+            - name: TIDEWAY_RUNTIME_ADAPTER
+              value: redis
+            - name: REDIS_URL
+              value: {{ if .Values.redis.enabled }}"redis://{{ include "tideway.redis.fullname" . }}:{{ .Values.redis.service.port }}"{{ else }}{{ required "externalRedis.url is required when redis.enabled=false" .Values.externalRedis.url | quote }}{{ end }}
+            - name: TIDEWAY_NODE_ID
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: TIDEWAY_NODE_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          resources:
+            {{- toYaml .Values.gateway.resources | nindent 12 }}

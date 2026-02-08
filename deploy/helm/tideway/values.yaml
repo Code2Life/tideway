@@ -1,0 +1,24 @@
+gateway:
+  replicaCount: 3
+  image:
+    repository: ghcr.io/tensor-fusion/tideway-gateway
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8787
+  apiKeys: "dev-key"
+  resources: {}
+
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "7-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    port: 6379
+  resources: {}
+
+externalRedis:
+  url: ""

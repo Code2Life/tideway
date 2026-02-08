@@ -1,0 +1,18 @@
+name = "tideway-gateway"
+main = "src/index.ts"
+compatibility_date = "2026-02-08"
+workers_dev = true
+
+[[durable_objects.bindings]]
+name = "GATEWAY_ROOM"
+class_name = "GatewayRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GatewayRoom"]
+
+[vars]
+SSE_PUBLISHER_API_KEYS = "dev-key"
+
+[observability]
+enabled = true
