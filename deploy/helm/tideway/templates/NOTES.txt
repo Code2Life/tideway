@@ -1,0 +1,16 @@
+Tideway SSE Gateway has been deployed.
+
+Service URL:
+  kubectl get svc {{ include "tideway.fullname" . }} -n {{ .Release.Namespace }}
+
+To test the health endpoint:
+  kubectl port-forward svc/{{ include "tideway.fullname" . }} {{ .Values.gateway.service.port }}:{{ .Values.gateway.service.port }} -n {{ .Release.Namespace }}
+  curl http://localhost:{{ .Values.gateway.service.port }}/healthz
+
+{{- if .Values.redis.enabled }}
+
+Embedded Redis:
+  {{ include "tideway.redis.fullname" . }}:{{ .Values.redis.service.port }}
+{{- end }}
+
+Docs: https://github.com/tensor-fusion/tideway/tree/main/docs

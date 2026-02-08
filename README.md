@@ -113,10 +113,11 @@ Publisher + subscriber in four languages (E2E-validated):
 | Environment | Command |
 |-------------|---------|
 | **Cloudflare Workers** | `cd workers/gateway && npx wrangler deploy` |
-| **Docker Compose** | `docker compose -f deploy/docker-compose.yml up` (gateways :8787–8789) |
-| **Helm (K8s)** | `helm install tideway deploy/helm/tideway` (3 replicas + Redis) |
+| **Docker** | `docker run -p 8787:8787 -e SSE_PUBLISHER_API_KEYS=key ghcr.io/tensor-fusion/tideway-gateway:latest` |
+| **Docker Compose** | `docker compose -f deploy/docker-compose.yml up` (3 gateways + Redis) |
+| **Helm (K8s)** | `helm install tideway deploy/helm/tideway --set gateway.apiKeys=key` |
 
-More: [docs/advanced-reference.md](docs/advanced-reference.md)
+Full self-host guide: [docs/self-host-guide.md](docs/self-host-guide.md)
 
 ---
 
@@ -150,7 +151,8 @@ pnpm bench:publish   # fan-out benchmark
 
 - [Getting started](docs/getting-started.md)
 - [API reference](docs/api-reference.md)
-- [Advanced](docs/advanced-reference.md) (Redis, Docker, Helm)
+- [Self-host guide](docs/self-host-guide.md) (Docker, Helm, building from source)
+- [Advanced](docs/advanced-reference.md) (Redis adapter, benchmarks, E2E)
 
 ---
 

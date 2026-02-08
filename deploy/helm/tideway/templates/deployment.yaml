@@ -1,38 +1,48 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "tideway.fullname" . }}
+  labels:
+    {{- include "tideway.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  api-keys: {{ .Values.gateway.apiKeys | quote }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "tideway.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "tideway.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "tideway.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.gateway.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "tideway.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "tideway.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "tideway.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "tideway.selectorLabels" . | nindent 8 }}
     spec:
+      terminationGracePeriodSeconds: {{ .Values.gateway.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- toYaml .Values.gateway.securityContext | nindent 8 }}
       containers:
         - name: gateway
           image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
           imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
-          command:
-            - pnpm
-            - dev
-            - --ip
-            - 0.0.0.0
-            - --port
-            - "{{ .Values.gateway.service.port }}"
           ports:
-            - containerPort: {{ .Values.gateway.service.port }}
+            - name: http
+              containerPort: {{ .Values.gateway.service.port }}
+              protocol: TCP
           env:
+            - name: PORT
+              value: {{ .Values.gateway.service.port | quote }}
             - name: SSE_PUBLISHER_API_KEYS
-              value: {{ .Values.gateway.apiKeys | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tideway.fullname" . }}
+                  key: api-keys
             - name: TIDEWAY_RUNTIME_ADAPTER
               value: redis
             - name: REDIS_URL
@@ -47,5 +57,21 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: status.podIP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
           resources:
             {{- toYaml .Values.gateway.resources | nindent 12 }}

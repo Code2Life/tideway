@@ -1,3 +1,4 @@
+/// <reference types="@cloudflare/workers-types" />
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 

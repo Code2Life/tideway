@@ -4,21 +4,18 @@ kind: Deployment
 metadata:
   name: {{ include "tideway.redis.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "tideway.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "tideway.labels" . | nindent 4 }}
     app.kubernetes.io/component: redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "tideway.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "tideway.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: redis
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "tideway.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "tideway.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: redis
     spec:
       containers:
@@ -26,13 +23,24 @@ spec:
           image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
           imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.redis.service.port }}
+            - name: redis
+              containerPort: {{ .Values.redis.service.port }}
           args:
             - redis-server
             - --save
             - ""
             - --appendonly
             - "no"
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 2
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.redis.resources | nindent 12 }}
 {{- end }}

@@ -4,6 +4,12 @@ services:
     ports:
       - "6379:6379"
     command: ["redis-server", "--save", "", "--appendonly", "no"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   gateway-1:
     build:
@@ -15,11 +21,22 @@ services:
       REDIS_URL: redis://redis:6379
       TIDEWAY_NODE_ID: gateway-1
       TIDEWAY_NODE_IP: gateway-1
-    command: ["pnpm", "dev", "--ip", "0.0.0.0", "--port", "8787"]
     ports:
       - "8787:8787"
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8787/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
 
   gateway-2:
     build:
@@ -31,11 +48,22 @@ services:
       REDIS_URL: redis://redis:6379
       TIDEWAY_NODE_ID: gateway-2
       TIDEWAY_NODE_IP: gateway-2
-    command: ["pnpm", "dev", "--ip", "0.0.0.0", "--port", "8788"]
     ports:
-      - "8788:8788"
+      - "8788:8787"
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8787/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
 
   gateway-3:
     build:
@@ -47,8 +75,19 @@ services:
       REDIS_URL: redis://redis:6379
       TIDEWAY_NODE_ID: gateway-3
       TIDEWAY_NODE_IP: gateway-3
-    command: ["pnpm", "dev", "--ip", "0.0.0.0", "--port", "8789"]
     ports:
-      - "8789:8789"
+      - "8789:8787"
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8787/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"

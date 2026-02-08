@@ -13,6 +13,8 @@
     "bench:publish": "pnpm exec tsx benchmarks/publish-fanout.ts"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260204.0",
+    "@types/node": "^25.2.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
     "vitest": "^4.0.18"

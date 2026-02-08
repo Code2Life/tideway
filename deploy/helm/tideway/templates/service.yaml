@@ -3,14 +3,12 @@ kind: Service
 metadata:
   name: {{ include "tideway.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "tideway.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "tideway.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.gateway.service.type }}
   selector:
-    app.kubernetes.io/name: {{ include "tideway.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "tideway.selectorLabels" . | nindent 4 }}
   ports:
     - name: http
       port: {{ .Values.gateway.service.port }}
-      targetPort: {{ .Values.gateway.service.port }}
+      targetPort: http

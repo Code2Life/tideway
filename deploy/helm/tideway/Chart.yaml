@@ -1,6 +1,11 @@
 apiVersion: v2
 name: tideway
-description: Tideway SSE Gateway deployment with optional embedded Redis
+description: Tideway SSE Gateway — self-hosted deployment with optional embedded Redis
 version: 0.1.0
 appVersion: "0.1.0"
 type: application
+keywords:
+  - sse
+  - server-sent-events
+  - gateway
+  - realtime
