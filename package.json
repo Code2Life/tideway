@@ -7,9 +7,13 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "pnpm --filter @tideway/gateway build:server",
+    "clean": "rm -rf workers/gateway/dist",
+    "dev": "pnpm --filter @tideway/gateway dev",
+    "start": "pnpm --filter @tideway/gateway start",
     "test": "pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
-    "e2e:examples": "./e2e/examples-smoke.sh",
+    "e2e": "./e2e/examples-smoke.sh",
     "bench:publish": "pnpm exec tsx benchmarks/publish-fanout.ts"
   },
   "devDependencies": {

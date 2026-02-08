@@ -75,6 +75,8 @@ run_case() {
 
   if ! wait_for_topic_active "${topic}"; then
     echo "[${language}] topic did not become active" | tee -a "${SUMMARY_LOG}"
+    echo "[${language}] subscriber log:" | tee -a "${SUMMARY_LOG}"
+    cat "${subscriber_log}" | tee -a "${SUMMARY_LOG}" || true
     kill "${subscriber_pid}" >/dev/null 2>&1 || true
     return 1
   fi
@@ -117,9 +119,27 @@ wait_for_health
 
 echo "gateway ready at ${GATEWAY_URL}" | tee -a "${SUMMARY_LOG}"
 
+# Pre-build Go binaries so the subscriber connects immediately (avoid go run compile delay)
+GO_SUBSCRIBER_BIN="${RESULT_DIR}/go-subscriber"
+GO_PUBLISHER_BIN="${RESULT_DIR}/go-publisher"
+if command -v go >/dev/null 2>&1; then
+  (cd "${ROOT_DIR}/examples/go" && go build -o "${GO_SUBSCRIBER_BIN}" ./subscriber && go build -o "${GO_PUBLISHER_BIN}" ./publisher) || {
+    echo "go build failed, skipping go case" | tee -a "${SUMMARY_LOG}"
+    GO_SUBSCRIBER_BIN=""
+    GO_PUBLISHER_BIN=""
+  }
+else
+  GO_SUBSCRIBER_BIN=""
+  GO_PUBLISHER_BIN=""
+fi
+
 run_case "typescript" "pnpm exec tsx examples/typescript/subscriber.ts" "pnpm exec tsx examples/typescript/publisher.ts" 60
 run_case "python" "python3 examples/python/subscriber.py" "python3 examples/python/publisher.py" 60
-run_case "go" "go run ./examples/go/subscriber" "go run ./examples/go/publisher" 60
+if [[ -n "${GO_SUBSCRIBER_BIN:-}" && -x "${GO_SUBSCRIBER_BIN}" ]]; then
+  run_case "go" "${GO_SUBSCRIBER_BIN}" "${GO_PUBLISHER_BIN}" 60
+else
+  run_case "go" "go run ./examples/go/subscriber" "go run ./examples/go/publisher" 90
+fi
 run_case "rust" "cargo run --quiet --manifest-path examples/rust/Cargo.toml --bin subscriber" "cargo run --quiet --manifest-path examples/rust/Cargo.toml --bin publisher" 180
 
 echo "completed: $(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "${SUMMARY_LOG}"
