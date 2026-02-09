@@ -11,8 +11,9 @@ class_name = "GatewayRoom"
 tag = "v1"
 new_sqlite_classes = ["GatewayRoom"]
 
-[vars]
-SSE_PUBLISHER_API_KEYS = "dev-key"
+# [vars]
+# SSE_PUBLISHER_API_KEYS = "dev-key" (for test env only)
+# wrangler secret put SSE_PUBLISHER_API_KEYS
 
 [observability]
 enabled = true
