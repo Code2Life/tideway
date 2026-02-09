@@ -145,6 +145,8 @@ pnpm bench:publish   # fan-out benchmark
 
 **Layout:** `workers/gateway/` (Worker + inline Admin UI) · `packages/runtime-redis/` (Redis adapter) · `examples/` · `deploy/` · `docs/`
 
+**Releases:** Versioning is done by [release-please](.github/workflows/release.yml) on conventional commits. If the Release workflow fails with *"GitHub Actions is not permitted to create or approve pull requests"*, enable **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** (organization may need to allow it first). Optionally set a `RELEASE_PLEASE_TOKEN` secret (PAT) for the action to use.
+
 ---
 
 ## Docs
