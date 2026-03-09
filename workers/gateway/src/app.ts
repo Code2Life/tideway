@@ -12,9 +12,9 @@ export const app = new Hono<{ Bindings: GatewayBindings }>()
 app.use('*', cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-SSE-Topic', 'X-SSE-Id'],
   exposeHeaders: ['Content-Length', 'X-Request-ID'],
-  maxAge: 86400,
+  maxAge: 600, // 10 minutes
   credentials: true,
 }))
 
