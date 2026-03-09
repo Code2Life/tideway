@@ -2,7 +2,7 @@ name = "tideway"
 main = "src/index.ts"
 compatibility_date = "2026-02-08"
 workers_dev = true
-account_id = "0a406b93a2dfc733d6cd3ec64ac6ad42"
+account_id = "ec67d6e22124b256882cab516f5ad24a"
 
 # Routes will be configured via dashboard after deployment
 # routes = [
