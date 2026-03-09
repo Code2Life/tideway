@@ -2,6 +2,7 @@ name = "tideway"
 main = "src/index.ts"
 compatibility_date = "2026-02-08"
 workers_dev = true
+account_id = "0a406b93a2dfc733d6cd3ec64ac6ad42"
 
 # Routes for sse.tensor-fusion.ai domain
 routes = [
