@@ -4,10 +4,10 @@ compatibility_date = "2026-02-08"
 workers_dev = true
 account_id = "0a406b93a2dfc733d6cd3ec64ac6ad42"
 
-# Routes for sse.tensor-fusion.ai domain
-routes = [
-  { pattern = "sse.tensor-fusion.ai/*", zone_name = "tensor-fusion.ai" }
-]
+# Routes will be configured via dashboard after deployment
+# routes = [
+#   { pattern = "sse.tensor-fusion.ai/*", zone_name = "tensor-fusion.ai" }
+# ]
 
 [[durable_objects.bindings]]
 name = "GATEWAY_ROOM"
