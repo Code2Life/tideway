@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 
 import { adminRoutes } from './admin'
 import { requirePublisherApiKey } from './lib/auth'
@@ -6,6 +7,16 @@ import { resolveRuntimeAdapter } from './runtime'
 import type { GatewayBindings } from './types'
 
 export const app = new Hono<{ Bindings: GatewayBindings }>()
+
+// Enable CORS for all origins
+app.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposeHeaders: ['Content-Length', 'X-Request-ID'],
+  maxAge: 86400,
+  credentials: true,
+}))
 
 app.route('/admin', adminRoutes)
 
